@@ -1,4 +1,5 @@
 const express = require("express")
+const robots = require('express-robots-txt');
 const puppeteer = require("puppeteer");
 const targetHost = "https://blog.nano71.com"
 const app = express()
@@ -7,6 +8,14 @@ const port = 9001
 let browserWSEndpoint
 let browser
 let timer
+
+app.use(robots([
+    {
+        UserAgent: "*",
+        Disallow: ["/*.css$", "/*.js$", "/*.gif$"],
+        Sitemap: []
+    }
+]));
 
 app.get('*', async (req, res) => {
 
@@ -19,7 +28,6 @@ app.get('*', async (req, res) => {
         console.log("skip", req.url)
         res.status(400).send("Bad Request")
     }
-
 });
 
 // 启动 Express应用程序, 监听指定的端口号
