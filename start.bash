@@ -1,3 +1,3 @@
-fuser -k 9001/tcp
+./stop.bash
 rm -rf ./nohup.out
 nohup node ./server.js &
