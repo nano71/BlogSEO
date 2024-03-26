@@ -1,6 +1,7 @@
 const express = require("express")
 const robots = require('express-robots-txt');
 const puppeteer = require("puppeteer");
+const useragent = require('express-useragent');
 const targetHost = "https://blog.nano71.com"
 const app = express()
 const port = 9001
@@ -16,9 +17,11 @@ app.use(robots([
         Sitemap: []
     }
 ]));
+app.use(useragent.express())
 
 app.get('*', async (req, res) => {
-
+    const userAgent = req.useragent;
+    console.log("userAgent:", userAgent);
     if (!req.url.includes(".")) {
         console.log(req.url);
         res.contentType("text/html")
