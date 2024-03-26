@@ -21,11 +21,11 @@ app.use(useragent.express())
 
 app.get('*', async (req, res) => {
     const userAgent = req.useragent;
-    console.log("userAgent:", userAgent);
+    console.log("userAgent:", userAgent.source);
     if (!req.url.includes(".")) {
         console.log(req.url);
         res.contentType("text/html")
-        res.send(await fetchHTML(req.url));
+        res.send(await fetchHTML(req.url,));
         closeBrowser()
     } else {
         console.log("skip", req.url)
@@ -43,21 +43,25 @@ app.listen(port, undefined, () => {
 /**
  * 获取网页内容
  * @param {string} url
+ * @param {string} ua
  * @return Promise<string>
  */
-async function fetchHTML(url) {
+async function fetchHTML(url,ua) {
     if (browserWSEndpoint) {
         browser = await puppeteer.connect({
             browserWSEndpoint
         })
     } else {
         browser = await puppeteer.launch({
+            headless: false,
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         browserWSEndpoint = browser.wsEndpoint()
     }
     const page = await browser.newPage();
     await page.setRequestInterception(true);
+    await page.setUserAgent(ua)
+    page.setDefaultTimeout(30000)
     page.on('request', (request) => {
         const path = new URL(request.url()).pathname;
         if (path.includes(".") && !path.endsWith(".js")) {
