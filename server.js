@@ -53,7 +53,7 @@ async function fetchHTML(url,ua) {
         })
     } else {
         browser = await puppeteer.launch({
-            headless: false,
+            headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
         });
         browserWSEndpoint = browser.wsEndpoint()
