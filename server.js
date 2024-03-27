@@ -21,11 +21,9 @@ app.use(useragent.express())
 
 app.get('*', async (req, res) => {
     const userAgent = req.useragent;
-    console.log("userAgent:", userAgent.source);
     if (!req.url.includes(".")) {
-        console.log(req.url);
         res.contentType("text/html")
-        res.send(await fetchHTML(req.url,userAgent.source));
+        res.send(await fetchHTML(req.url, userAgent.source));
         closeBrowser()
     } else {
         console.log("skip", req.url)
@@ -46,7 +44,7 @@ app.listen(port, undefined, () => {
  * @param {string} ua
  * @return Promise<string>
  */
-async function fetchHTML(url,ua) {
+async function fetchHTML(url, ua) {
     if (browserWSEndpoint) {
         browser = await puppeteer.connect({
             browserWSEndpoint
@@ -58,10 +56,11 @@ async function fetchHTML(url,ua) {
         });
         browserWSEndpoint = browser.wsEndpoint()
     }
+    console.log("fetchHTML:", url);
     const page = await browser.newPage();
     await page.setRequestInterception(true);
-    await page.setUserAgent(ua)
-    page.setDefaultTimeout(30000)
+    // await page.setUserAgent(ua)
+    page.setDefaultTimeout(60000)
     page.on('request', (request) => {
         const path = new URL(request.url()).pathname;
         if (path.includes(".") && !path.endsWith(".js")) {
@@ -72,11 +71,14 @@ async function fetchHTML(url,ua) {
             request.continue();
         }
     });
+    console.log(1);
     await page.goto(targetHost + url, {
         waitUntil: 'networkidle0'
     });
+    console.log(2);
     let html = await page.content();
     await page.close()
+    console.log("end");
     return html
 }
 
