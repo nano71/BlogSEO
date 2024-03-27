@@ -23,7 +23,7 @@ app.get('*', async (req, res) => {
     const userAgent = req.useragent;
     if (!req.url.includes(".")) {
         res.contentType("text/html")
-        res.send(await fetchHTML(req.url, userAgent.source));
+        res.send(await fetchHTML(req.url, `bot(${userAgent.source.split('').reverse().join("")})`));
         closeBrowser()
     } else {
         console.log("skip", req.url)
@@ -59,7 +59,7 @@ async function fetchHTML(url, ua) {
     console.log("fetchHTML:", url);
     const page = await browser.newPage();
     await page.setRequestInterception(true);
-    // await page.setUserAgent(ua)
+    await page.setUserAgent(ua)
     page.setDefaultTimeout(60000)
     page.on('request', (request) => {
         const path = new URL(request.url()).pathname;
