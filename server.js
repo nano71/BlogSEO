@@ -25,7 +25,7 @@ app.get('*', async (req, res) => {
     if (!req.url.includes(".")) {
         console.log(req.url);
         res.contentType("text/html")
-        res.send(await fetchHTML(req.url,));
+        res.send(await fetchHTML(req.url,userAgent.source));
         closeBrowser()
     } else {
         console.log("skip", req.url)
