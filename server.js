@@ -23,7 +23,11 @@ app.get('*', async (req, res) => {
     const userAgent = req.useragent;
     if (!req.url.includes(".")) {
         res.contentType("text/html")
-        res.send(await fetchHTML(req.url, `bot(${userAgent.source.split('').reverse().join("")})`));
+        let html = await fetchHTML(req.url, `bot(${userAgent.source.split('').reverse().join("")})`)
+        if (html.includes("The article is non-existent.")) {
+            res.status(404).send()
+        } else
+            res.send(html)
         closeBrowser()
     } else {
         console.log("skip", req.url)
