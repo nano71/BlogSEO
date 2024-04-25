@@ -19,19 +19,20 @@ app.use(robots([
 ]));
 app.use(useragent.express())
 
-app.get('*', async (req, res) => {
-    const userAgent = req.useragent;
-    if (!req.url.includes(".")) {
-        res.contentType("text/html")
-        let html = await fetchHTML(req.url, `bot(${userAgent.source.split('').reverse().join("")})`)
+app.get('*', async (request, response) => {
+    const userAgent = request.useragent;
+    const url = request.url
+    if (!url.includes(".")) {
+        response.contentType("text/html")
+        let html = await fetchHTML(url, `bot(${userAgent.source.split('').reverse().join("")})`)
         if (html.includes("The article is non-existent.")) {
-            res.status(404).send()
+            response.status(404).send()
         } else
-            res.send(html)
+            response.send(html)
         closeBrowser()
     } else {
-        console.log("skip", req.url)
-        res.status(400).send("Bad Request")
+        console.log("skip", url)
+        response.status(400).send("Bad Request")
     }
 });
 
