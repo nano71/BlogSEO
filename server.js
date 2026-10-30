@@ -50,6 +50,8 @@ app.listen(port, undefined, () => {
  * @return Promise<string>
  */
 async function fetchHTML(url, ua) {
+    if (url.includes("%2"))
+        return ""
     if (browserWSEndpoint) {
         browser = await puppeteer.connect({
             browserWSEndpoint
